@@ -20,6 +20,7 @@ $LOAD_PATH.unshift __DIR__ unless
 
 require 'fog/collection'
 require 'fog/connection'
+require 'fog/deprecation'
 require 'fog/model'
 require 'fog/parser'
 require 'fog/ssh'
@@ -30,7 +31,7 @@ require 'fog/terremark'
 
 module Fog
 
-  VERSION = '0.0.76'
+  VERSION = '0.0.78'
 
   module Mock
     @delay = 1
