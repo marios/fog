@@ -30,7 +30,17 @@ module Fog
       module Mock
 
         def get_organizations
-          raise MockNotImplemented.new("Contributions welcome!")
+          response = Excon::Response.new
+          org_list = @data[:organizations].map do |organization|
+            { "name" => organization[:info][:name],
+              "href" => "#{@base_url}/org/#{organization[:info][:id]}",
+              "type" => "application/vnd.vmware.vcloud.org+xml"
+            }
+          end
+          response.body = { "OrgList" => org_list }
+          response.status = 200
+          response.headers = Fog::Terremark::Shared::Mock.headers(response.body, "application/vnd.vmware.vcloud.orgList+xml")
+          response
         end
 
       end

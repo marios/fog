@@ -8,6 +8,7 @@ module Fog
       class Files < Fog::Collection
 
         attribute :delimiter,     'Delimiter'
+        attribute :directory
         attribute :is_truncated,  'IsTruncated'
         attribute :marker,        'Marker'
         attribute :max_keys,      ['MaxKeys', 'max-keys']
@@ -25,7 +26,7 @@ module Fog
           options = options.reject {|key,value| value.nil? || value.to_s.empty?}
           merge_attributes(options)
           parent = directory.collection.get(
-            directory.name,
+            directory.key,
             options
           )
           if parent
@@ -35,12 +36,8 @@ module Fog
           end
         end
 
-        def directory
-          @directory
-        end
-
         def get(key, options = {}, &block)
-          data = connection.get_object(directory.name, key, options, &block)
+          data = connection.get_object(directory.key, key, options, &block)
           file_data = {
             :body => data.body,
             :key  => key
@@ -56,11 +53,11 @@ module Fog
         end
 
         def get_url(key, expires)
-          connection.get_object_url(directory.name, key, expires)
+          connection.get_object_url(directory.key, key, expires)
         end
 
         def head(key, options = {})
-          data = connection.head_object(directory.name, key, options)
+          data = connection.head_object(directory.key, key, options)
           file_data = {
             :key => key
           }

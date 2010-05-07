@@ -20,9 +20,8 @@ module Fog
         attribute :state,             'status'
 
         def initialize(attributes = {})
-          if attributes['attachmentSet']
-            attributes.merge!(attributes.delete('attachmentSet').first || {})
-          end
+          # assign server first to prevent race condition with new_record?
+          self.server = attributes.delete(:server)
           super
         end
 
@@ -33,9 +32,11 @@ module Fog
           true
         end
 
-        def server=(new_server)
-          requires :device
+        def ready?
+          state == 'available'
+        end
 
+        def server=(new_server)
           if new_server
             attach(new_server)
           else
@@ -63,14 +64,20 @@ module Fog
 
         private
 
+        def attachmentSet=(new_attachment_set)
+          merge_attributes(new_attachment_set.first || {})
+        end
+
         def attach(new_server)
           if new_record?
             @server = new_server
             @availability_zone = new_server.availability_zone
           elsif new_server
+            requires :device
             @server = nil
             @server_id = new_server.id
             connection.attach_volume(@server_id, @id, @device)
+            reload
           end
         end
 
@@ -79,6 +86,7 @@ module Fog
           @server_id = nil
           unless new_record?
             connection.detach_volume(@id)
+            reload
           end
         end
 

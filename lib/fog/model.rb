@@ -51,6 +51,10 @@ module Fog
       send(self.class.instance_variable_get('@identity'))
     end
 
+    def identity=(new_identity)
+      send("#{identity}=", new_identity)
+    end
+
     def initialize(new_attributes = {})
       merge_attributes(new_attributes)
     end
@@ -84,8 +88,11 @@ module Fog
     end
 
     def reload
-      new_attributes = collection.get(identity).attributes
-      merge_attributes(new_attributes)
+      if data = collection.get(identity)
+        new_attributes = data.attributes
+        merge_attributes(new_attributes)
+        self
+      end
     end
 
     def requires(*args)
@@ -107,14 +114,8 @@ module Fog
     end
 
     def wait_for(timeout = 600, &block)
-      start = Time.now
-      until instance_eval(&block)
-        if Time.now - start > timeout
-          break
-        end
-        reload
-        sleep(1)
-      end
+      reload
+      Fog.wait_for(timeout) { reload && instance_eval(&block) }
     end
 
     private

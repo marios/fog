@@ -7,23 +7,20 @@ Shindo.tests('Rackspace::Servers#list_private_addresses', 'rackspace') do
     end
 
     after do
-      wait_for { Rackspace[:servers].get_server_details(@server_id).body['server']['status'] == 'ACTIVE' }
+      Fog.wait_for { Rackspace[:servers].get_server_details(@server_id).body['server']['status'] == 'ACTIVE' }
       Rackspace[:servers].delete_server(@server_id)
     end
 
     test('has proper output format') do
-      validate_format(@data, [String])
+      has_format(@data, [String])
     end
 
   end
   tests('failure') do
 
     test('raises NotFound error if server does not exist') do
-      begin
+      has_error(Excon::Errors::NotFound) do
         Rackspace[:servers].list_private_addresses(0)
-        false
-      rescue Excon::Errors::NotFound
-        true
       end
     end
 

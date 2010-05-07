@@ -7,12 +7,12 @@ Shindo.tests('Rackspace::Servers#list_servers_detail', 'rackspace') do
     end
 
     after do
-      wait_for { Rackspace[:servers].get_server_details(@server_id).body['server']['status'] == 'ACTIVE' }
+      Fog.wait_for { Rackspace[:servers].get_server_details(@server_id).body['server']['status'] == 'ACTIVE' }
       Rackspace[:servers].delete_server(@server_id)
     end
 
     test('has proper output format') do
-      validate_format(@data, Rackspace::Servers::Formats::SERVER)
+      has_format(@data, Rackspace::Servers::Formats::SERVER)
     end
 
   end

@@ -1,19 +1,23 @@
 require 'fog/model'
+require 'fog/rackspace/models/files/files'
 
 module Fog
   module Rackspace
     module Files
 
       class Directory < Fog::Model
+        extend Fog::Deprecation
+        deprecate(:name, :key)
+        deprecate(:name=, :key=)
 
-        identity  :name
+        identity  :key, ['name']
 
         attribute :bytes
         attribute :count
 
         def destroy
-          requires :name
-          connection.delete_container(@name)
+          requires :key
+          connection.delete_container(key)
           true
         rescue Excon::Errors::NotFound
           false
@@ -29,8 +33,8 @@ module Fog
         end
 
         def save
-          requires :name
-          connection.put_container(@name)
+          requires :key
+          connection.put_container(key)
           true
         end
 

@@ -7,12 +7,12 @@ Shindo.tests('Slicehost#create_slice', 'slicehost') do
     end
 
     after do
-      wait_for { Slicehost[:slices].get_slice(@id).body['status'] == 'active' }
+      Fog.wait_for { Slicehost[:slices].get_slice(@id).body['status'] == 'active' }
       Slicehost[:slices].delete_slice(@id)
     end
 
     test('has proper output format') do
-      validate_format(@data, Slicehost::Formats::SLICE.merge('root-password' => String))
+      has_format(@data, Slicehost::Formats::SLICE.merge('root-password' => String))
     end
 
   end

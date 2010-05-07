@@ -4,17 +4,10 @@ require 'open-uri'
 current_directory = File.dirname(__FILE__)
 require "#{current_directory}/../lib/fog"
 require "#{current_directory}/../lib/fog/bin"
-# Fog.mock!
 
-unless defined?(LOADED_SPEC_OPTS)
-  # inlined spec.opts
-  require "#{current_directory}/compact_progress_bar_formatter"
-  Spec::Runner.options.parse_format("Spec::Runner::Formatter::CompactProgressBarFormatter")
-  Spec::Runner.options.loadby  = 'mtime'
-  Spec::Runner.options.reverse = true
-  LOADED_SPEC_OPTS = true
+if ENV["FOG_MOCK"] == "true"
+  Fog.mock!
 end
-
 
 module AWS
   class << self
@@ -98,16 +91,6 @@ def eventually(max_delay = 16, &block)
     rescue => error
       raise error if delay >= max_delay
     end
-  end
-end
-
-def wait_for(timeout = 600, &block)
-  start = Time.now
-  until instance_eval(&block)
-    if Time.now - start > timeout
-      break
-    end
-    sleep(1)
   end
 end
 

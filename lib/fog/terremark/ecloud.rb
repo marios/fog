@@ -5,6 +5,13 @@ module Fog
      module Bin
      end
 
+     module Defaults
+       HOST   = 'services.enterprisecloud.terremark.com'
+       PATH   = '/api/v0.8a-ext2.0'
+       PORT   = 443
+       SCHEME = 'https'
+     end
+
      extend Fog::Terremark::Shared
 
      def self.new(options={})
@@ -31,11 +38,10 @@ module Fog
         def initialize(options={})
           @terremark_password = options[:terremark_ecloud_password]
           @terremark_username = options[:terremark_ecloud_username]
-          @host   = options[:host]   || "services.enterprisecloud.terremark.com"
-          @path   = options[:path]   || "/api/v0.8a-ext2.0"
-          @port   = options[:port]   || 443
-          @scheme = options[:scheme] || 'https'
-          @cookie = get_organizations.headers['Set-Cookie']
+          @host   = options[:host]   || Fog::Terremark::Ecloud::Defaults::HOST
+          @path   = options[:path]   || Fog::Terremark::Ecloud::Defaults::PATH
+          @port   = options[:port]   || Fog::Terremark::Ecloud::Defaults::PORT
+          @scheme = options[:scheme] || Fog::Terremark::Ecloud::Defaults::SCHEME
         end
 
       end
@@ -43,6 +49,14 @@ module Fog
      class Mock
        include Fog::Terremark::Shared::Mock
        include Fog::Terremark::Shared::Parser
+
+       def initialize(option = {})
+         super
+         @base_url = Fog::Terremark::Ecloud::Defaults::SCHEME + "://" +
+                     Fog::Terremark::Ecloud::Defaults::HOST +
+                     Fog::Terremark::Ecloud::Defaults::PATH
+         @data = self.class.data[:terremark_ecloud_username]
+       end
      end
 
     end

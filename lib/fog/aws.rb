@@ -1,4 +1,5 @@
 require 'fog/aws/ec2.rb'
+require 'fog/aws/elb.rb'
 require 'fog/aws/s3'
 require 'fog/aws/simpledb'
 
@@ -11,6 +12,28 @@ module Fog
         params["#{key}.#{index}"] = value
       end
       params
+    end
+
+    def self.signed_params(params, options = {})
+      params.merge!({
+        'AWSAccessKeyId'    => options[:aws_access_key_id],
+        'SignatureMethod'   => 'HmacSHA256',
+        'SignatureVersion'  => '2',
+        'Timestamp'         => Time.now.utc.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        'Version'           => options[:version]
+      })
+
+      body = ''
+      for key in params.keys.sort
+        unless (value = params[key]).nil?
+          body << "#{key}=#{CGI.escape(value.to_s).gsub(/\+/, '%20')}&"
+        end
+      end
+      string_to_sign = "POST\n#{options[:host]}\n/\n" << body.chop
+      hmac = options[:hmac].update(string_to_sign)
+      body << "Signature=#{CGI.escape(Base64.encode64(hmac.digest).chomp!).gsub(/\+/, '%20')}"
+
+      body
     end
 
     class Mock

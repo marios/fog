@@ -8,7 +8,7 @@ module Fog
 
         identity  :id,                    'instanceId'
 
-        attribute :architecture
+        attr_accessor :architecture
         attribute :ami_launch_index,      'amiLaunchIndex'
         attribute :availability_zone,     'availabilityZone'
         attribute :block_device_mapping,  'blockDeviceMapping'
@@ -41,6 +41,12 @@ module Fog
           requires :id
 
           connection.addresses(:server => self)
+        end
+
+        def console_output
+          requires :id
+
+          connection.get_console_output(@id)
         end
 
         def destroy

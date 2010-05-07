@@ -2,14 +2,14 @@
 specs: 
 - rake: 
     version: 0.8.7
-- annals: 
-    version: 0.0.3
 - excon: 
     version: 0.0.21
 - formatador: 
-    version: 0.0.13
+    version: 0.0.14
+- gestalt: 
+    version: 0.0.6
 - json: 
-    version: 1.4.0
+    version: 1.4.2
 - mime-types: 
     version: "1.16"
 - net-ssh: 
@@ -21,7 +21,7 @@ specs:
 - ruby-hmac: 
     version: 0.4.0
 - shindo: 
-    version: 0.0.17
+    version: 0.0.18
 hash: e443f12a9a7794f2ff4fc8e8d201b12b1e8b30bb
 sources: 
 - Rubygems: 

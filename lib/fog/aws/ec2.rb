@@ -66,6 +66,7 @@ module Fog
           require 'fog/aws/requests/ec2/detach_volume'
           require 'fog/aws/requests/ec2/disassociate_address'
           require 'fog/aws/requests/ec2/get_console_output'
+          require 'fog/aws/requests/ec2/modify_image_attributes'
           require 'fog/aws/requests/ec2/reboot_instances'
           require 'fog/aws/requests/ec2/release_address'
           require 'fog/aws/requests/ec2/revoke_security_group_ingress'
@@ -176,15 +177,17 @@ module Fog
           @aws_secret_access_key  = options[:aws_secret_access_key]
           @hmac = HMAC::SHA256.new(@aws_secret_access_key)
           @host = options[:host] || case options[:region]
-          when 'eu-west-1'
-            'ec2.eu-west-1.amazonaws.com'
-          when 'us-east-1'
-            'ec2.us-east-1.amazonaws.com'
-          when 'us-west-1'
-            'ec2.us-west-1.amazonaws.com'
-          else
-            'ec2.amazonaws.com'
-          end
+            when 'ap-southeast-1'
+              'ec2.ap-southeast-1.amazonaws.com'
+            when 'eu-west-1'
+              'ec2.eu-west-1.amazonaws.com'
+            when 'us-east-1'
+              'ec2.us-east-1.amazonaws.com'
+            when 'us-west-1'
+              'ec2.us-west-1.amazonaws.com'
+            else
+              'ec2.amazonaws.com'
+            end
           @port       = options[:port]      || 443
           @scheme     = options[:scheme]    || 'https'
         end
@@ -197,24 +200,15 @@ module Fog
           idempotent  = params.delete(:idempotent)
           parser      = params.delete(:parser)
 
-          params.merge!({
-            'AWSAccessKeyId' => @aws_access_key_id,
-            'SignatureMethod' => 'HmacSHA256',
-            'SignatureVersion' => '2',
-            'Timestamp' => Time.now.utc.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            'Version' => '2009-11-30'
-          })
-
-          body = ''
-          for key in params.keys.sort
-            unless (value = params[key]).nil?
-              body << "#{key}=#{CGI.escape(value.to_s).gsub(/\+/, '%20')}&"
-            end
-          end
-
-          string_to_sign = "POST\n#{@host}\n/\n" << body.chop
-          hmac = @hmac.update(string_to_sign)
-          body << "Signature=#{CGI.escape(Base64.encode64(hmac.digest).chomp!).gsub(/\+/, '%20')}"
+          body = AWS.signed_params(
+            params,
+            {
+              :aws_access_key_id  => @aws_access_key_id,
+              :hmac               => @hmac,
+              :host               => @host,
+              :version            => '2009-11-30'
+            }
+          )
 
           response = @connection.request({
             :body       => body,

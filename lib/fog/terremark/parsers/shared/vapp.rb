@@ -6,16 +6,13 @@ module Fog
         class Vapp < Fog::Parsers::Base
 
           def reset
-            @response = { 'Links' => [], 'disks' => []}
-            @inside_os_section = false
-            @inside_item = false
-            @get_cpu = false
-            @get_ram = false
-            @get_disks = false
+            @response = { 'Links' => [], 'VirtualHardware' => {} }
+            @in_operating_system = false
+            @resource_type = nil
           end
- 
+
           def start_element(name, attributes)
-            @value = ''
+            super
             case name
               when 'Link'
                 link = {}
@@ -24,7 +21,7 @@ module Fog
                 end
                 @response['Links'] << link
               when 'OperatingSystemSection'
-                @inside_os_section = true
+                @in_operating_system = true
              when 'VApp'
                 vapp = {}
                 until attributes.empty?
@@ -36,46 +33,39 @@ module Fog
                   end
                 end
                 @response.merge!(vapp.reject {|key,value| !['href', 'name', 'size', 'status', 'type'].include?(key)})
-             when 'Item'
-                @inside_item = true
              end
           end
 
           def end_element(name)
             case name
-              when 'IpAddress'
-                @response['IpAddress'] = @value
-              when 'Description'
-                if @inside_os_section
-                  @response['os'] = @value
-                  @inside_os_section = false
-                end
-              when 'ResourceType'
-                if @inside_item
-                    case @value
-                      when '3' 
-                        @get_cpu = true # cpu
-                      when '4'  # memory
-                        @get_ram = true
-                      when '17' # disks
-                        @get_disks = true
-                    end   
-                end
-              when 'VirtualQuantity'
-                if (@get_cpu)
-                  @response['cpu'] = @value
-                  @get_cpu = false
-                elsif (@get_ram)                
-                  @response['ram'] = @value
-                  @get_ram = false
-                elsif (@get_disks)
-                  @response['disks'] << @value  
-                  @get_disks = false
-                end
-              when 'Item'
-                @inside_item = false
+            when 'IpAddress'
+              @response['IpAddress'] = @value
+            when 'Description'
+              if @in_operating_system
+                @response['OperatingSystem'][name] = @value
+                @in_operating_system = false
+              end
+            when 'ResourceType'
+              @resource_type = @value
+              case @value
+              when '3'
+                @get_cpu = true # cpu
+              when '4'  # memory
+                @get_ram = true
+              when '17' # disks
+                @get_disks = true
+              end
+            when 'VirtualQuantity'
+              case @resource_type
+              when '3'
+                @response['VirtualHardware']['cpu'] = @value
+              when '4'
+                @response['VirtualHardware']['ram'] = @value
+              when '17'
+                @response['VirtualHardware']['disks'] ||= []
+                @response['VirtualHardware']['disks'] << @value
+              end
             end
-            
           end
 
         end

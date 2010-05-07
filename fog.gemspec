@@ -7,8 +7,8 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = 'fog'
-  s.version           = '0.0.78'
-  s.date              = '2010-04-25'
+  s.version           = '0.0.91'
+  s.date              = '2010-05-05'
   s.rubyforge_project = 'fog'
 
   ## Make sure your summary is short. The description may be as long
@@ -73,6 +73,7 @@ Gem::Specification.new do |s|
     lib/fog/aws.rb
     lib/fog/aws/bin.rb
     lib/fog/aws/ec2.rb
+    lib/fog/aws/elb.rb
     lib/fog/aws/models/ec2/address.rb
     lib/fog/aws/models/ec2/addresses.rb
     lib/fog/aws/models/ec2/flavor.rb
@@ -113,6 +114,12 @@ Gem::Specification.new do |s|
     lib/fog/aws/parsers/ec2/get_console_output.rb
     lib/fog/aws/parsers/ec2/run_instances.rb
     lib/fog/aws/parsers/ec2/terminate_instances.rb
+    lib/fog/aws/parsers/elb/deregister_instances_from_load_balancer.rb
+    lib/fog/aws/parsers/elb/describe_instance_health.rb
+    lib/fog/aws/parsers/elb/describe_load_balancers.rb
+    lib/fog/aws/parsers/elb/disable_availability_zones_for_load_balancer.rb
+    lib/fog/aws/parsers/elb/enable_availability_zones_for_load_balancer.rb
+    lib/fog/aws/parsers/elb/register_instances_with_load_balancer.rb
     lib/fog/aws/parsers/s3/copy_object.rb
     lib/fog/aws/parsers/s3/get_bucket.rb
     lib/fog/aws/parsers/s3/get_bucket_location.rb
@@ -148,11 +155,18 @@ Gem::Specification.new do |s|
     lib/fog/aws/requests/ec2/detach_volume.rb
     lib/fog/aws/requests/ec2/disassociate_address.rb
     lib/fog/aws/requests/ec2/get_console_output.rb
+    lib/fog/aws/requests/ec2/modify_image_attributes.rb
     lib/fog/aws/requests/ec2/reboot_instances.rb
     lib/fog/aws/requests/ec2/release_address.rb
     lib/fog/aws/requests/ec2/revoke_security_group_ingress.rb
     lib/fog/aws/requests/ec2/run_instances.rb
     lib/fog/aws/requests/ec2/terminate_instances.rb
+    lib/fog/aws/requests/elb/deregister_instances_from_load_balancer.rb
+    lib/fog/aws/requests/elb/describe_instance_health.rb
+    lib/fog/aws/requests/elb/describe_load_balancers.rb
+    lib/fog/aws/requests/elb/disable_availability_zones_for_load_balancer.rb
+    lib/fog/aws/requests/elb/enable_availability_zones_for_load_balancer.rb
+    lib/fog/aws/requests/elb/register_instances_with_load_balancer.rb
     lib/fog/aws/requests/s3/copy_object.rb
     lib/fog/aws/requests/s3/delete_bucket.rb
     lib/fog/aws/requests/s3/delete_object.rb
@@ -181,6 +195,12 @@ Gem::Specification.new do |s|
     lib/fog/connection.rb
     lib/fog/credentials.rb
     lib/fog/deprecation.rb
+    lib/fog/local.rb
+    lib/fog/local/bin.rb
+    lib/fog/local/models/directories.rb
+    lib/fog/local/models/directory.rb
+    lib/fog/local/models/file.rb
+    lib/fog/local/models/files.rb
     lib/fog/model.rb
     lib/fog/parser.rb
     lib/fog/rackspace.rb
@@ -263,10 +283,13 @@ Gem::Specification.new do |s|
     lib/fog/terremark/models/shared/servers.rb
     lib/fog/terremark/models/shared/task.rb
     lib/fog/terremark/models/shared/tasks.rb
+    lib/fog/terremark/models/shared/vdc.rb
+    lib/fog/terremark/models/shared/vdcs.rb
     lib/fog/terremark/parser.rb
     lib/fog/terremark/parsers/shared/get_catalog.rb
     lib/fog/terremark/parsers/shared/get_catalog_item.rb
     lib/fog/terremark/parsers/shared/get_internet_services.rb
+    lib/fog/terremark/parsers/shared/get_network_ips.rb
     lib/fog/terremark/parsers/shared/get_node_services.rb
     lib/fog/terremark/parsers/shared/get_organization.rb
     lib/fog/terremark/parsers/shared/get_organizations.rb
@@ -293,6 +316,7 @@ Gem::Specification.new do |s|
     lib/fog/terremark/requests/shared/get_catalog_item.rb
     lib/fog/terremark/requests/shared/get_internet_services.rb
     lib/fog/terremark/requests/shared/get_network.rb
+    lib/fog/terremark/requests/shared/get_network_ips.rb
     lib/fog/terremark/requests/shared/get_node_services.rb
     lib/fog/terremark/requests/shared/get_organization.rb
     lib/fog/terremark/requests/shared/get_organizations.rb
@@ -306,8 +330,8 @@ Gem::Specification.new do |s|
     lib/fog/terremark/requests/shared/instantiate_vapp_template.rb
     lib/fog/terremark/requests/shared/power_off.rb
     lib/fog/terremark/requests/shared/power_on.rb
-    lib/fog/terremark/requests/shared/reset.rb
-    lib/fog/terremark/requests/shared/shutdown.rb
+    lib/fog/terremark/requests/shared/power_reset.rb
+    lib/fog/terremark/requests/shared/power_shutdown.rb
     lib/fog/terremark/shared.rb
     lib/fog/terremark/vcloud.rb
     spec/aws/models/ec2/address_spec.rb

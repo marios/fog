@@ -5,6 +5,7 @@ describe 'EC2.get_console_output' do
 
     before(:each) do
       @instance_id = AWS[:ec2].run_instances(GENTOO_AMI, 1, 1).body['instancesSet'].first['instanceId']
+      AWS[:ec2].servers.get(@instance_id).wait_for { ready? }
     end
 
     after(:each) do
@@ -12,11 +13,13 @@ describe 'EC2.get_console_output' do
     end
 
     it "should return proper attributes" do
-      actual = AWS[:ec2].get_console_output(@instance_id)
-      actual.body['instanceId'].should be_a(String)
-      actual.body['output'].should be_a(String)
-      actual.body['requestId'].should be_a(String)
-      actual.body['timestamp'].should be_a(Time)
+      actual = AWS[:ec2].get_console_output(@instance_id).body
+      actual['instanceId'].should be_a(String)
+      if actual['output']
+        actual['output'].should be_a(String)
+      end
+      actual['requestId'].should be_a(String)
+      actual['timestamp'].should be_a(Time)
     end
 
   end

@@ -15,6 +15,11 @@ module Fog
         attribute :fencemode
         attribute :links
 
+        def ips
+          #Until there is a real model for these ?
+          connection.get_network_ips(@id).body['IpAddresses']
+        end
+
         private
 
         def href=(new_href)

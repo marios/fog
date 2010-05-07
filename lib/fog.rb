@@ -24,14 +24,18 @@ require 'fog/deprecation'
 require 'fog/model'
 require 'fog/parser'
 require 'fog/ssh'
+
 require 'fog/aws'
+require 'fog/local'
 require 'fog/rackspace'
 require 'fog/slicehost'
 require 'fog/terremark'
 
 module Fog
 
-  VERSION = '0.0.78'
+  unless const_defined?(:VERSION)
+    VERSION = '0.0.91'
+  end
 
   module Mock
     @delay = 1
@@ -53,6 +57,20 @@ module Fog
 
   def self.mocking?
     !!@mocking
+  end
+
+  def self.wait_for(timeout = 600, &block)
+    duration = 0
+    start = Time.now
+    until yield || duration > timeout
+      sleep(1)
+      duration = Time.now - start
+    end
+    if duration > timeout
+      false
+    else
+      { :duration => duration }
+    end
   end
 
 end
