@@ -46,6 +46,54 @@ module AWS
         'return'    => ::Fog::Boolean
       }
 
+      SNAPSHOT = {
+        'description' => NilClass,
+        'ownerId'     => String,
+        'progress'    => String,
+        'snapshotId'  => String,
+        'startTime'   => Time,
+        'status'      => String,
+        'volumeId'    => String,
+        'volumeSize'  => Integer
+      }
+
+      SNAPSHOTS = {
+        'requestId'   => String,
+        'snapshotSet' => [SNAPSHOT]
+      }
+
+      VOLUME = {
+        'availabilityZone'  => String,
+        'createTime'        => Time,
+        'requestId'         => String,
+        'size'              => Integer,
+        'snapshotId'        => NilClass,
+        'status'            => String,
+        'volumeId'          => String
+      }
+
+      VOLUME_ATTACHMENT = {
+        'attachTime'  => Time,
+        'device'      => String,
+        'instanceId'  => String,
+        'requestId'   => String,
+        'status'      => String,
+        'volumeId'    => String
+      }
+
+      VOLUMES = {
+        'volumeSet' => [{
+          'availabilityZone'    => String,
+          'attachmentSet'       => [],
+          'createTime'          => Time,
+          'size'                => Integer,
+          'snapshotId'          => NilClass,
+          'status'              => String,
+          'volumeId'            => String
+        }],
+        'requestId' => String
+      }
+
     end
 
   end

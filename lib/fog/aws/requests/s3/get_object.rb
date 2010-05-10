@@ -34,29 +34,13 @@ module Fog
           headers['If-Unmodified-Since'] = options['If-Unmodified-Since'].utc.strftime("%a, %d %b %Y %H:%M:%S +0000") if options['If-Modified-Since']
           headers.merge!(options)
           request({
-            :block    => block,
             :expects  => 200,
             :headers  => headers,
             :host     => "#{bucket_name}.#{@host}",
             :idempotent => true,
             :method   => 'GET',
             :path     => CGI.escape(object_name)
-          })
-        end
-
-        def get_object_url(bucket_name, object_name, expires)
-          unless bucket_name
-            raise ArgumentError.new('bucket_name is required')
-          end
-          unless object_name
-            raise ArgumentError.new('object_name is required')
-          end
-          url({
-            :headers  => {},
-            :host     => "#{bucket_name}.#{@host}",
-            :method   => 'GET',
-            :path     => CGI.escape(object_name)
-          }, expires)
+          }, &block)
         end
 
       end
@@ -107,20 +91,6 @@ module Fog
           response
         end
 
-        def get_object_url(bucket_name, object_name, expires)
-          unless bucket_name
-            raise ArgumentError.new('bucket_name is required')
-          end
-          unless object_name
-            raise ArgumentError.new('object_name is required')
-          end
-          url({
-            :headers  => {},
-            :host     => "#{bucket_name}.#{@host}",
-            :method   => 'GET',
-            :path     => CGI.escape(object_name)
-          }, expires)
-        end
       end
     end
   end

@@ -17,11 +17,12 @@ module Fog
         #     * 'startTime'<~Time> - timestamp when snapshot was initiated
         #     * 'status'<~String> - state of snapshot
         #     * 'volumeId'<~String> - id of volume snapshot targets
-        def create_snapshot(volume_id)
+        def create_snapshot(volume_id, description = nil)
           request(
-            'Action'    => 'CreateSnapshot',
-            'VolumeId'  => volume_id,
-            :parser     => Fog::Parsers::AWS::EC2::CreateSnapshot.new
+            'Action'      => 'CreateSnapshot',
+            'Description' => description,
+            'VolumeId'    => volume_id,
+            :parser       => Fog::Parsers::AWS::EC2::CreateSnapshot.new
           )
         end
 
@@ -29,17 +30,20 @@ module Fog
 
       class Mock
 
-        def create_snapshot(volume_id)
+        def create_snapshot(volume_id, description = nil)
           response = Excon::Response.new
-          if @data[:volumes][volume_id]
+          if volume = @data[:volumes][volume_id]
             response.status = 200
             snapshot_id = Fog::AWS::Mock.snapshot_id
             data = {
+              'description' => description,
+              'ownerId'     => @owner_id,
               'progress'    => nil,
               'snapshotId'  => snapshot_id,
               'startTime'   => Time.now,
               'status'      => 'pending',
-              'volumeId'    => volume_id
+              'volumeId'    => volume_id,
+              'volumeSize'  => volume['size']
             }
             @data[:snapshots][snapshot_id] = data
             response.body = {
